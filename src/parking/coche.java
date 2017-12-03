@@ -6,4 +6,29 @@ public class coche {
 	
 	private int calle;
 	private int n_plaza;
+	
+	public int getCategoria() {
+		return categoria;
+	}
+	public void setCategoria(int categoria) {
+		this.categoria = categoria;
+	}
+	public int getLlegada() {
+		return llegada;
+	}
+	public void setLlegada(int llegada) {
+		this.llegada = llegada;
+	}
+	public int getCalle() {
+		return calle;
+	}
+	public void setCalle(int calle) {
+		this.calle = calle;
+	}
+	public int getN_plaza() {
+		return n_plaza;
+	}
+	public void setN_plaza(int n_plaza) {
+		this.n_plaza = n_plaza;
+	}
 }
