@@ -31,7 +31,7 @@ public class SATParking {
 		
 		try{
 			//Lista de variables booleanVar para el jacop
-			List<BooleanVar> listaCoches = new ArrayList<BooleanVar>();
+			List<BooleanVar> listaVehiculos = new ArrayList<BooleanVar>();
 			//Lista de las variables coche, que contienen su categoria (de forma numerica), orden de llegada, calle en la que se encuentran y 
 			//el numero de plaza
 			List<coche> coches = new ArrayList<coche>();
