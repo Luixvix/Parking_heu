@@ -28,7 +28,7 @@ public class SATParking {
 
 		try {
 			// Lista de variables booleanVar para el jacop
-			List<BooleanVar> listaCoches = new ArrayList<BooleanVar>();// nos sirve para crear una variable boolean de
+			List<BooleanVar> listaVehiculos = new ArrayList<BooleanVar>();// nos sirve para crear una variable boolean de
 																		// decision sobre los coches que luego usara el
 																		// jacob
 			// Lista de las variables coche, que contienen su categoria (de forma numerica),
@@ -41,16 +41,19 @@ public class SATParking {
 			 * REGLAS
 			 * 
 			 */
-
-			// Creamos una variable de decisión para cada coche de la lista de tipo coche
-			for (int i = 0; i < coches.size(); i++) {
-				BooleanVar x = new BooleanVar(store, "Coche de categoria: "+ coches.get(i).getCategoria() +" con llegada: "+ coches.get(i).getLlegada()+" en la calle: "+ coches.get(i).getCalle()+" en la plaza: "+ coches.get(i).getN_plaza());
-			}
+			
 
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
 
+	}
+	
+	public static void addClause(SatWrapper satWrapper, int literal1, int literal2) {
+		IntVec clause = new IntVec(satWrapper.pool);
+		clause.add(literal1);
+		clause.add(literal2);
+		satWrapper.addModelClause(clause.toArray());
 	}
 
 }
