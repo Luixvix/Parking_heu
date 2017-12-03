@@ -22,20 +22,21 @@ public class reader {
 	 * Funcion: lee el contenido en txt del fichero que contiene el mapa y lo
 	 * parsea a un array 2D para poder moverse mejor.
 	 */
-	public byte[][] fileReader(Path filename) throws IOException {
+	public String[][] fileReader(Path filename) throws IOException {
 		List<String> file = Files.readAllLines(filename);
-		int y = file.get(0).length();
-		int  x = file.size();
-		byte[][] map = new byte[x][y];
-		for (int i = 0; i < map.length; i++) {
-			for (int j = 0; j < map[0].length; j++) {
-				map[i][j] = (byte) file.get(i).charAt(j);
+		int y = (int)(file.get(0).charAt(0));
+		int  x = (int)(file.get(0).charAt(1));
+		String[][] map = new String[x][y];
+		for (int i = 1; i < y; i++) {
+			for (int j = 0; j < 2*x; j+=2) {
+				String tmp = ""+ file.get(i).charAt(j) + file.get(i).charAt(j+1);
+				map[i][j] = tmp;
 			}
 		}
 		return map;
 	}
 	/*
-	 *  Nombre: ExitTheMatrix
+	 *  Nombre: closeFile
 	 *  Funcion: escribe en el fichero de destino el mapa proporcionado
 	 *  como una matriz de bytes
 	 *  
@@ -44,13 +45,13 @@ public class reader {
 	 * @param filename
 	 * @param map
 	 */
-	public void ExitTheMatrix(Path filename, byte[][] map) {
+	public void closeFile(Path filename, String[][] map) {
 		try {
 			FileWriter flS = new FileWriter(filename.toFile());
 			BufferedWriter fS = new BufferedWriter(flS);
 			for (int i = 0; i < map.length; i++) {
 				for (int j = 0; j < map[0].length; j++) {
-					fS.write((char)map[i][j]);
+					fS.write(map[i][j]);
 				}
 				fS.newLine();
 			}
