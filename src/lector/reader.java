@@ -10,6 +10,7 @@ import java.util.List;
 
 public class reader {
 
+	/*
 	public static void main(String[] args) {
 		reader r = new reader();
 		Path inputFile = Paths.get(args[0]);
@@ -22,7 +23,7 @@ public class reader {
 			e.printStackTrace();
 		}
 
-	}
+	}*/
 
 	/*
 	 * Nombre: fileReader Entrada: Path filename, contiene el nombre/direccion
