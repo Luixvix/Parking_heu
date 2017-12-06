@@ -48,12 +48,11 @@ public class SATParking {
 			List<coche> coches = new ArrayList<coche>();
 
 			for (int i = 0; i < calle_y; i++) {
-				for (int j = 0; j < calle_y; j++) {
+				for (int j = 0; j < plaza_x; j++) {
 					String tmp = map[i][j];
 					int categoria = 0;
 					switch (tmp) {
 					case "__":
-
 						break;
 					default:
 						char ctmp = tmp.charAt(0);
@@ -66,7 +65,7 @@ public class SATParking {
 							categoria = 2;
 							break;
 						case 'C':
-							categoria = 2;
+							categoria = 3;
 							break;
 						}
 						coche c = new coche(categoria, llegada, i, j);
