@@ -132,11 +132,4 @@ public class SATParking {
 
 	}
 
-	public static void addClause(SatWrapper satWrapper, int literal1, int literal2) {
-		IntVec clause = new IntVec(satWrapper.pool);
-		clause.add(literal1);
-		clause.add(literal2);
-		satWrapper.addModelClause(clause.toArray());
-	}
-
 }
