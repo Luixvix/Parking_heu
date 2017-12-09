@@ -81,26 +81,25 @@ public class SATParking {
 			for (int i = 0; i < listaVehiculos.size(); i++) {
 				array_vehiculos[i] = listaVehiculos.get(i);
 				satWrapper.register(array_vehiculos[i]);
+				coches.get(i).setLiteralBDelante(satWrapper.cpVarToBoolVar(listaVehiculos.get(i), 1, true));
+				coches.get(i).setLiteralBDetras(satWrapper.cpVarToBoolVar(listaVehiculos.get(i), 1, true));
 			}
 			
 			
-			/*
-			 * for (int i = 0; i < coches.size(); i++) {
-			 * System.out.println("Coche: "+ i);
-			 * System.out.println(coches.get(i).getCategoria());
-			 * System.out.println(coches.get(i).getLlegada());
-			 * System.out.println(coches.get(i).getCalle());
-			 * System.out.println(coches.get(i).getN_plaza());
-			 * 
-			 * }
-			 * 
-			 */
+
 
 			/*
 			 * 
 			 * REGLAS
 			 * 
 			 */
+			
+			
+			//Resolucion del problema
+			Search<BooleanVar> search = new DepthFirstSearch<BooleanVar>();
+			SelectChoicePoint<BooleanVar> select = new SimpleSelect<BooleanVar>(array_vehiculos,
+								 new SmallestDomain<BooleanVar>(), new IndomainMin<BooleanVar>());
+			result = search.labeling(store, select);
 
 			r.closeFile(outputFile, map);
 		} catch (IOException e) {

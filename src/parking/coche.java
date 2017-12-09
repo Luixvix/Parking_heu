@@ -7,6 +7,9 @@ public class coche {
 	private int calle;
 	private int n_plaza;
 	
+	private int literalBDelante;
+	private int literalBDetras;
+
 	public coche(int categoria, int llegada, int calle, int n_plaza) {
 		this.categoria = categoria;
 		this.llegada = llegada;
@@ -36,5 +39,19 @@ public class coche {
 	}
 	public void setN_plaza(int n_plaza) {
 		this.n_plaza = n_plaza;
+	}
+	
+	
+	public int getLiteralBDetras() {
+		return literalBDetras;
+	}
+	public void setLiteralBDetras(int literalBDetras) {
+		this.literalBDetras = literalBDetras;
+	}
+	public int getLiteralBDelante() {
+		return literalBDelante;
+	}
+	public void setLiteralBDelante(int literalBDelante) {
+		this.literalBDelante = literalBDelante;
 	}
 }
