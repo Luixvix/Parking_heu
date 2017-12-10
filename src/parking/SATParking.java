@@ -69,36 +69,163 @@ public class SATParking {
 							break;
 						}
 						coche c = new coche(categoria, llegada, i, j);
-						BooleanVar cb = new BooleanVar(store, "Coche, Cat: " + categoria + " Orden: " + llegada
-								+ " Calle: " + i + " Plaza: " + j + "");
-						listaVehiculos.add(cb);
+						BooleanVar cb_detras = new BooleanVar(store, "Coche, Cat: " + categoria + " Orden: " + llegada
+								+ " Calle: " + i + " Plaza: " + j + " detras");
+						BooleanVar cb_delante = new BooleanVar(store, "Coche, Cat: " + categoria + " Orden: " + llegada
+								+ " Calle: " + i + " Plaza: " + j + " delante");
+						listaVehiculos.add(cb_detras);
+						listaVehiculos.add(cb_delante);
+						satWrapper.register(cb_detras);
+						satWrapper.register(cb_delante);
+						c.setLiteralBDetras(satWrapper.cpVarToBoolVar(cb_detras, 1, true));
+						c.setLiteralBDelante(satWrapper.cpVarToBoolVar(cb_delante, 1, true));
 						coches.add(c);
 						break;
 					}
 				}
 			}
-			BooleanVar array_vehiculos [] = new BooleanVar [listaVehiculos.size()];
+			BooleanVar array_vehiculos[] = new BooleanVar[listaVehiculos.size()];
 			for (int i = 0; i < listaVehiculos.size(); i++) {
 				array_vehiculos[i] = listaVehiculos.get(i);
-				satWrapper.register(array_vehiculos[i]);
-				coches.get(i).setLiteralBDelante(satWrapper.cpVarToBoolVar(listaVehiculos.get(i), 1, true));
-				coches.get(i).setLiteralBDetras(satWrapper.cpVarToBoolVar(listaVehiculos.get(i), 1, true));
 			}
-			
-			
-
 
 			/*
 			 * 
 			 * REGLAS
 			 * 
 			 */
-			
-			
-			//Resolucion del problema
+			// Regla 1: Cada coche no debe estar bloqueado por delante y por
+			// detras a la vez
+			// Un valor TRUE indica que esta bloqueado en ese sentido, de forma
+			// que si los dos son TRUE el resultado debe ser falso
+			for (int i = 0; i < coches.size(); i++) {
+				// (-Detras V -Delante)
+				addClause(satWrapper, -coches.get(i).getLiteralBDetras(), -coches.get(i).getLiteralBDelante());
+			}
+
+			// Regla 2: Estados de bloqueo de cada coche por detras y por
+			// delante.
+			// En caso de estar bloqueado, se introduce el literal de forma
+			// positiva, en caso de no estarlo se introduce de forma negativa
+
+
+			// Estado de detras de cada coche
+			for (int i = 0; i < coches.size(); i++) {
+				int calle = coches.get(i).getCalle();
+				int plaza = coches.get(i).getN_plaza();
+				int categoria = coches.get(i).getCategoria();
+				int llegada = coches.get(i).getLlegada();
+
+				if (i - 1 < 0) {
+					// Detras libre, dado que aunque el coche no esta al
+					// comienzo de la calle, sabemos que estan en orden y por
+					// tanto al ser el primero no hay otro coche detras
+					IntVec estado = new IntVec(satWrapper.pool);
+					estado.add(coches.get(i).getLiteralBDetras());
+					satWrapper.addModelClause(estado.toArray());
+					continue;
+				}
+
+				if (plaza == 0) {
+					// detras libre, comienzo de la calle
+					IntVec estado = new IntVec(satWrapper.pool);
+					estado.add(coches.get(i).getLiteralBDetras());
+					satWrapper.addModelClause(estado.toArray());
+					continue;
+				}
+				// Coche situado detras
+				if (coches.get(i - 1).getCalle() == calle && coches.get(i - 1).getN_plaza() == plaza - 1) {
+					if (coches.get(i - 1).getCategoria() >= categoria) {
+						if (coches.get(i - 1).getCategoria() > categoria) {
+							// bloqueado porque es de categoria superior
+							IntVec estado = new IntVec(satWrapper.pool);
+							estado.add(-coches.get(i).getLiteralBDetras());
+							satWrapper.addModelClause(estado.toArray());
+						} else {
+							// Es de la misma categoria
+							if (coches.get(i - 1).getLlegada() > llegada) {
+								// Bloqueado, misma categoria y llego despues
+								IntVec estado = new IntVec(satWrapper.pool);
+								estado.add(-coches.get(i).getLiteralBDetras());
+								satWrapper.addModelClause(estado.toArray());
+							} else {
+								// libre porque llego antes y por tanto saldra
+								// antes
+								IntVec estado = new IntVec(satWrapper.pool);
+								estado.add(coches.get(i).getLiteralBDetras());
+								satWrapper.addModelClause(estado.toArray());
+							}
+						}
+					} else {
+						// libre porque es de categoria menor
+						IntVec estado = new IntVec(satWrapper.pool);
+						estado.add(coches.get(i).getLiteralBDetras());
+						satWrapper.addModelClause(estado.toArray());
+					}
+				}
+			}
+
+			// Estado de delante de cada coche
+			for (int i = 0; i < coches.size(); i++) {
+				int calle = coches.get(i).getCalle();
+				int plaza = coches.get(i).getN_plaza();
+				int categoria = coches.get(i).getCategoria();
+				int llegada = coches.get(i).getLlegada();
+
+				if (i + 1 == coches.size()) {
+					// delante libre, dado que aunque el coche no esta al
+					// final de la calle, sabemos que estan en orden y por
+					// tanto al ser el ultimo no hay otro coche delante
+					IntVec estado = new IntVec(satWrapper.pool);
+					estado.add(coches.get(i).getLiteralBDelante());
+					satWrapper.addModelClause(estado.toArray());
+					continue;
+				}
+
+				if (plaza == plaza_x - 1) {
+					// delante libre, final de la calle
+					IntVec estado = new IntVec(satWrapper.pool);
+					estado.add(coches.get(i).getLiteralBDelante());
+					satWrapper.addModelClause(estado.toArray());
+					continue;
+				}
+				
+				// Coche situado delante
+				if (coches.get(i + 1).getCalle() == calle && coches.get(i + 1).getN_plaza() == plaza + 1) {
+					if (coches.get(i + 1).getCategoria() >= categoria) {
+						if (coches.get(i + 1).getCategoria() > categoria) {
+							// bloqueado porque es de categoria superior
+							IntVec estado = new IntVec(satWrapper.pool);
+							estado.add(-coches.get(i).getLiteralBDelante());
+							satWrapper.addModelClause(estado.toArray());
+						} else {
+							// Es de la misma categoria
+							if (coches.get(i + 1).getLlegada() > llegada) {
+								// Bloqueado, misma categoria y llego despues
+								IntVec estado = new IntVec(satWrapper.pool);
+								estado.add(-coches.get(i).getLiteralBDelante());
+								satWrapper.addModelClause(estado.toArray());
+							} else {
+								// libre porque llego antes y por tanto saldra
+								// antes
+								IntVec estado = new IntVec(satWrapper.pool);
+								estado.add(coches.get(i).getLiteralBDelante());
+								satWrapper.addModelClause(estado.toArray());
+							}
+						}
+					} else {
+						// libre porque es de categoria menor
+						IntVec estado = new IntVec(satWrapper.pool);
+						estado.add(coches.get(i).getLiteralBDelante());
+						satWrapper.addModelClause(estado.toArray());
+					}
+				}
+			}
+
+			// Resolucion del problema
 			Search<BooleanVar> search = new DepthFirstSearch<BooleanVar>();
 			SelectChoicePoint<BooleanVar> select = new SimpleSelect<BooleanVar>(array_vehiculos,
-								 new SmallestDomain<BooleanVar>(), new IndomainMin<BooleanVar>());
+					new SmallestDomain<BooleanVar>(), new IndomainMin<BooleanVar>());
 			result = search.labeling(store, select);
 
 			r.closeFile(outputFile, map);
@@ -106,6 +233,13 @@ public class SATParking {
 			e.printStackTrace();
 		}
 
+	}
+
+	public static void addClause(SatWrapper satWrapper, int literal1, int literal2) {
+		IntVec clause = new IntVec(satWrapper.pool);
+		clause.add(literal1);
+		clause.add(literal2);
+		satWrapper.addModelClause(clause.toArray());
 	}
 
 }
