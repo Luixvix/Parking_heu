@@ -105,6 +105,7 @@ public class SATParking {
 							IntVec bloqueoDelante = new IntVec(satWrapper.pool);
 							// añadimos los literales a la clausula de bloqueo delante
 							bloqueoDelante.add(listaLiterales.get(i+1).getLiteral());
+							satWrapper.addModelClause(bloqueoDelante.toArray());// añadimos la clausula al satWrapper
 						}
 						// si el coche de detras llego despues
 						// lo hemos indicado para que compruebe si el siguiente coche en la lista llego antes que nosotros
@@ -113,6 +114,7 @@ public class SATParking {
 							IntVec bloqueoDetras = new IntVec(satWrapper.pool);
 							// añadimos los literales a la clausula de bloqueo delante
 							bloqueoDetras.add(listaLiterales.get(i+1).getLiteral());
+							satWrapper.addModelClause(bloqueoDetras.toArray());// añadimos la clausula al satWrapper
 						}
 					}
 
